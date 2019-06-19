@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	Id         uint      `json:"id"`
+	Id         int       `json:"id"`
 	LoginId    string    `json:"loginId"`
 	Password   string    `json:"password"`
 	Name       string    `json:"name"`
@@ -14,8 +14,8 @@ type User struct {
 	CreateUser string    `json:"createUser"`
 	UpdateTime time.Time `json:"updateTime"`
 	UpdateUser string    `json:"updateUser"`
-	Status     uint      `json:"status"`
-	Version    uint      `json:"version"`
+	Status     int       `json:"status"`
+	Version    int       `json:"version"`
 }
 
 // 设置User的表名为`user`,不设置为users

@@ -12,6 +12,13 @@ func Success(data interface{}) *Result {
 	}
 }
 
+func Info() *Result {
+	return &Result{
+		"msg":        "Action successfully done.",
+		"statusCode": http.StatusOK,
+	}
+}
+
 func Error(statusCode int, msg string) *Result {
 	return &Result{
 		"msg":        msg,
