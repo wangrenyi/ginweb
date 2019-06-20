@@ -25,3 +25,18 @@ func Error(statusCode int, msg string) *Result {
 		"statusCode": statusCode,
 	}
 }
+
+func AuthError() *Result {
+	return &Result{
+		"msg":        "Unauthorized",
+		"statusCode": http.StatusUnauthorized,
+	}
+}
+
+func AuthSuccess(authToken string) *Result {
+	return &Result{
+		"token":      authToken,
+		"statusCode": http.StatusOK,
+		"msg":        "Authentication Success",
+	}
+}

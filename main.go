@@ -3,22 +3,33 @@ package main
 import (
 	"GinWeb/db"
 	"GinWeb/hanlder"
+	"GinWeb/security"
 	"github.com/gin-gonic/gin"
 )
-
-func main() {
-	router := gin.Default()
-	initUserRouter(router)
-
-	router.Run("localhost:9080")
-}
 
 func init() {
 	db.InitDB()
 }
 
-func initUserRouter(engine *gin.Engine) {
-	v1 := engine.Group("/v1")
+func main() {
+	router := gin.Default()
+
+	oauthGroup := router.Group("/appbiz")
+	{
+		oauthGroup.POST("/login", security.Login)
+		oauthGroup.POST("/register", security.Register)
+	}
+	oauthGroup.Use(security.JWTAuth)
+
+	initUserRouter(oauthGroup)
+
+	defer db.Connect().Close()
+
+	router.Run("localhost:9080")
+}
+
+func initUserRouter(routerGroup *gin.RouterGroup) {
+	v1 := routerGroup.Group("/v1")
 	{
 		v1.POST("/user/save", hanlder.SaveUser)
 		v1.GET("/user/:id", hanlder.GetUser)
@@ -27,3 +38,9 @@ func initUserRouter(engine *gin.Engine) {
 		v1.DELETE("/user/:id", hanlder.DeleteUser)
 	}
 }
+
+/**
+GIN:{https://www.jianshu.com/p/a3f63b5da74c, https://github.com/gin-gonic/gin/tree/v1.4.0}
+GORM:http://gorm.book.jasperxu.com/
+JWT:https://github.com/Wangjiaxing123/JwtDemo
+*/

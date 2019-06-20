@@ -22,7 +22,7 @@ func SaveUser(c *gin.Context) {
 	user.UpdateTime = time.Now()
 	user.UpdateUser = "admin"
 
-	connect := db.DB
+	connect := db.Connect()
 	connect.Create(user)
 	c.JSON(http.StatusOK, common.Success("you are logged in"))
 }
@@ -31,7 +31,7 @@ func GetUser(c *gin.Context) {
 	id := c.Param("id")
 
 	user := new(model.User)
-	connect := db.DB
+	connect := db.Connect()
 	connect.First(&user, id)
 	c.JSON(http.StatusOK, common.Success(user))
 }
@@ -52,7 +52,7 @@ func GetUsers(c *gin.Context) {
 	}
 
 	var users []model.User
-	connect := db.DB
+	connect := db.Connect()
 	connect.Offset(size).Limit(pageSize).Order(pageQuery.OrderBy, true).Find(&users)
 	c.JSON(http.StatusOK, common.Success(&users))
 }
@@ -69,7 +69,7 @@ func UpdateUser(c *gin.Context) {
 	user.Version = preVersion + 1
 	fmt.Println(user)
 
-	connect := db.DB
+	connect := db.Connect()
 	connect.Model(&user).Where("version = ?", preVersion).Updates(user)
 	c.JSON(http.StatusOK, common.Success(&user))
 }
@@ -83,7 +83,7 @@ func DeleteUser(c *gin.Context) {
 	user.UpdateTime = time.Now()
 	user.UpdateUser = "admin"
 
-	connect := db.DB
+	connect := db.Connect()
 	connect.Delete(&user)
 	c.JSON(http.StatusOK, common.Info())
 }
