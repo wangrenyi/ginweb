@@ -4,44 +4,67 @@ import (
 	"GinWeb/common"
 	"GinWeb/db"
 	"GinWeb/model"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 func Login(c *gin.Context) {
 	loginUser := new(model.User)
 	if err := c.ShouldBindJSON(loginUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, common.Error(http.StatusBadRequest, err.Error()))
 		return
 	}
-	LoginCheck(loginUser, c)
-	generateToken(loginUser, c)
+
+	if err := LoginCheck(loginUser); err != nil {
+		c.JSON(http.StatusOK, common.Error(http.StatusBadRequest, err.Error()))
+		return
+	}
+
+	token, err := generateToken(loginUser)
+	if err != nil {
+		c.JSON(http.StatusOK, common.Error(http.StatusInternalServerError, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, common.AuthSuccess(token))
 }
 
 func Register(c *gin.Context) {
 	registerUser := new(model.User)
 	if err := c.ShouldBindJSON(registerUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, common.Error(http.StatusBadRequest, err.Error()))
 		return
 	}
 
 	user := new(model.User)
 	connect := db.Connect()
-	connect.First(&user, registerUser.LoginId)
+	connect.Where("login_id = ?", registerUser.LoginId).First(&user)
 	if user.LoginId == registerUser.LoginId && user.Password != registerUser.Password {
-		//update password
+		//update password and name
+		user.Password=registerUser.Password
+		user.Name=registerUser.Name
+		connect.Model(user).Updates(user)
 	} else if user.LoginId == "" {
 		//create user
-	}else {
-		c.JSON(http.StatusOK,common.Error(http.StatusBadRequest,"The user already exists."))
+		registerUser.CreateTime=time.Now()
+		registerUser.CreateUser=registerUser.LoginId
+		registerUser.UpdateTime=time.Now()
+		registerUser.UpdateUser=registerUser.LoginId
+		registerUser.Version=1
+		registerUser.Status=1
+		connect.Create(registerUser)
+	} else {
+		c.JSON(http.StatusOK, common.Error(http.StatusBadRequest, "The user already exists."))
 		return
 	}
+	c.JSON(http.StatusOK, common.Info())
 }
 
 func JWTAuth(c *gin.Context) {
 	authToken := c.GetHeader("Authorization")
 	if authToken == "" {
-		c.JSON(http.StatusUnauthorized, common.AuthError())
+		c.JSON(http.StatusOK, common.AuthError())
 		c.Abort()
 		return
 	}
@@ -63,16 +86,18 @@ func JWTAuth(c *gin.Context) {
 	c.Set("claims", claims)
 }
 
-func LoginCheck(loginUser *model.User, c *gin.Context) {
+func LoginCheck(loginUser *model.User) error {
 
 	user := new(model.User)
 	connect := db.Connect()
-	connect.First(&user, loginUser.LoginId)
+	connect.Where("login_id = ?", loginUser.LoginId).First(&user)
 
 	if user.LoginId == "" {
-		c.JSON(http.StatusBadRequest, common.Error(http.StatusBadRequest, "The user does not exist."))
+		return errors.New("the user does not exist")
 	}
 	if loginUser.Password != user.Password || loginUser.LoginId != user.LoginId {
-		c.JSON(http.StatusBadRequest, common.Error(http.StatusBadRequest, "Incorrect account or password."))
+		return errors.New("incorrect account or password")
 	}
+
+	return nil
 }

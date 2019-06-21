@@ -14,7 +14,8 @@ import (
 func SaveUser(c *gin.Context) {
 	user := new(model.User)
 	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, common.Error(http.StatusBadRequest, err.Error()))
+		c.Abort()
 		return
 	}
 	user.CreateTime = time.Now()
@@ -39,7 +40,7 @@ func GetUser(c *gin.Context) {
 func GetUsers(c *gin.Context) {
 	pageQuery := new(common.PageQuery)
 	if err := c.ShouldBindQuery(pageQuery); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, common.Error(http.StatusBadRequest, err.Error()))
 		return
 	}
 	fmt.Println(pageQuery)
@@ -60,7 +61,7 @@ func GetUsers(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	user := new(model.User)
 	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, common.Error(http.StatusBadRequest, err.Error()))
 		return
 	}
 	user.UpdateTime = time.Now()

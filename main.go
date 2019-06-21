@@ -14,14 +14,14 @@ func init() {
 func main() {
 	router := gin.Default()
 
-	oauthGroup := router.Group("/appbiz")
+	routerGroup := router.Group("/appbiz")
 	{
-		oauthGroup.POST("/login", security.Login)
-		oauthGroup.POST("/register", security.Register)
+		routerGroup.POST("/login", security.Login)
+		routerGroup.POST("/register", security.Register)
 	}
-	oauthGroup.Use(security.JWTAuth)
+	routerGroup.Use(security.JWTAuth)
 
-	initUserRouter(oauthGroup)
+	initUserRouter(routerGroup)
 
 	defer db.Connect().Close()
 
