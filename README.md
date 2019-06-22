@@ -2,7 +2,7 @@
 go web gin demo
 
 # 知识点
-* 1.go mod,panic,recover ...
+* 1.go mod,pointer,map,slice,interface,type assertions,panic,recover
 * 2.gin router,group,middleware
 * 3.config setting
 * 4.gorm
