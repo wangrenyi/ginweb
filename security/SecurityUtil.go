@@ -56,7 +56,7 @@ func (j *JWT) ParseToken(authToken string) (*CustomClaims, error) {
 	return nil, TokenInvalid
 }
 
-func generateToken(user *model.User) (string, error) {
+func generateToken(user *model.User) (string,error) {
 	j := &JWT{
 		[]byte(SignKey),
 	}
