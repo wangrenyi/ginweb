@@ -1,0 +1,15 @@
+{
+  "database": {
+    "Dialect": "mysql",
+    "Database": "root:root@tcp(localhost:3306)/gin?charset=utf8&parseTime=True&loc=Local",
+    "MaxIdleConns": 10,
+    "MaxOpenConns": 50,
+    "ConnMaxLifetime": 2000
+  },
+  "server": {
+    "Environment": "dev",
+    "LogDir": "",
+    "LogFile": "/data/app/gin-app.log",
+    "Address": "localhost:9080"
+  }
+}
