@@ -2,7 +2,7 @@ package db
 
 import (
 	"GinWeb/config"
-	"GinWeb/model"
+	"GinWeb/logging"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
@@ -15,9 +15,8 @@ func init() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	if config.ServerConfig.Environment == model.DevelopmentMode {
-		db.LogMode(true)
-	}
+	logging.InitDBLog(db)
+
 	db.DB().SetMaxIdleConns(config.DatabaseConfig.MaxIdleConns)
 	db.DB().SetMaxOpenConns(config.DatabaseConfig.MaxOpenConns)
 	db.DB().SetConnMaxLifetime(time.Duration(config.DatabaseConfig.ConnMaxLifetime))

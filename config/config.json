@@ -4,12 +4,14 @@
     "Database": "root:root@tcp(localhost:3306)/gin?charset=utf8&parseTime=True&loc=Local",
     "MaxIdleConns": 10,
     "MaxOpenConns": 50,
-    "ConnMaxLifetime": 2000
+    "ConnMaxLifetime": 2000,
+    "LogDir": "/data/app/",
+    "LogFile": "gorm.log"
   },
   "server": {
     "Environment": "dev",
-    "LogDir": "",
-    "LogFile": "/data/app/gin-app.log",
+    "LogDir": "/data/app/",
+    "LogFile": "gin.log",
     "Address": "localhost:9080"
   }
 }
